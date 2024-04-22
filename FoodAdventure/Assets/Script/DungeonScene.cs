@@ -1,13 +1,12 @@
-using Scene;
+﻿using Scene;
 using UnityEngine;
 
 namespace Dungeon
 {
     public class DungeonScene : SceneBase
     {
-
         #region SerializeField
-        [SerializeField] private ReversiController reversiController;
+        [SerializeField] private DungeonController dungeonController;
         #endregion
 
         #region UnityEvent
@@ -15,7 +14,7 @@ namespace Dungeon
         {
             base.Start();
 
-            reversiController.Init();
+            dungeonController.Init();
         }
         #endregion
     }
