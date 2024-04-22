@@ -9,6 +9,7 @@ namespace Player
         /// <summary>移動にかかる時間の逆数</summary>
         private float inverseMoveTime;
         private Rigidbody2D rb;
+        private bool isMoving = false; // プレイヤーが移動中かどうかを示すフラグ
         #endregion
 
         #region SerializeField
@@ -27,21 +28,47 @@ namespace Player
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+            // Shiftキーが押されているかどうかをチェック
+            bool isShiftPressed = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+
+            if (!isMoving) // プレイヤーが移動中でない場合
             {
-                AttemptMove(0, 1);
-            }
-            else if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                AttemptMove(0, -1);
-            }
-            else if (Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                AttemptMove(-1, 0);
-            }
-            else if (Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                AttemptMove(1, 0);
+                if (isShiftPressed) // Shiftキーが押されている場合
+                {
+                    // 斜め移動を試みる
+                    if (Input.GetKeyDown(KeyCode.UpArrow) && Input.GetKey(KeyCode.RightArrow))
+                    {
+                        AttemptMove(1, 1);
+                    }
+                    else if (Input.GetKeyDown(KeyCode.UpArrow) && Input.GetKey(KeyCode.LeftArrow))
+                    {
+                        AttemptMove(-1, 1);
+                    }
+                    else if (Input.GetKeyDown(KeyCode.DownArrow) && Input.GetKey(KeyCode.RightArrow))
+                    {
+                        AttemptMove(1, -1);
+                    }
+                    else if (Input.GetKeyDown(KeyCode.DownArrow) && Input.GetKey(KeyCode.LeftArrow))
+                    {
+                        AttemptMove(-1, -1);
+                    }
+                }
+                else if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    AttemptMove(0, 1);
+                }
+                else if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    AttemptMove(0, -1);
+                }
+                else if (Input.GetKeyDown(KeyCode.LeftArrow))
+                {
+                    AttemptMove(-1, 0);
+                }
+                else if (Input.GetKeyDown(KeyCode.RightArrow))
+                {
+                    AttemptMove(1, 0);
+                }
             }
         }
         #endregion
@@ -63,6 +90,9 @@ namespace Player
 
             if (hit.transform == null) // 障害物がない場合
             {
+                // 移動中フラグを設定
+                isMoving = true;
+
                 // 移動中に他の移動を受け付けないようにする
                 StartCoroutine(SmoothMovement(end));
             }
@@ -80,7 +110,10 @@ namespace Player
                 sqrRemainingDistance = (transform.position - end).sqrMagnitude;
                 yield return null;
             }
+
+            // 移動が完了したらフラグをリセット
+            isMoving = false;
         }
-#endregion
+        #endregion
     }
 }
