@@ -6,7 +6,7 @@ namespace Player
 {
     public class PlayerController : MonoBehaviour
     {
-        #region PrivateField
+        #region PublicField
         /// <summary>プレイヤーの移動完了を知らせるイベント</summary>
         public event Action PlayerMoved;
         #endregion
@@ -22,13 +22,13 @@ namespace Player
         #endregion
 
         #region SerializeField
-        /// <summary>プレイヤーの移動にかかる時間</summary>
+        /// <summary>移動にかかる時間</summary>
         [SerializeField] float moveTime;
         /// <summary>障害物レイヤー</summary>
         [SerializeField] LayerMask blockingLayer;
         #endregion
 
-        #region PublicMethod
+        #region UnityEvent
         void Start()
         {
             rb = GetComponent<Rigidbody2D>();

@@ -1,4 +1,5 @@
 ﻿using Player;
+using Enemy;
 using UnityEngine;
 
 namespace Dungeon
@@ -8,6 +9,8 @@ namespace Dungeon
         #region PrivateField
         /// <summary>プレイヤーが行動したかどうか</summary>
         private bool isPlayerTurn;
+
+        private EnemyController enemyController;
         #endregion
 
         #region SerializeField
@@ -21,6 +24,8 @@ namespace Dungeon
         /// </summary>
         public void Init()
         {
+            enemyController = FindObjectOfType<EnemyController>();
+
             if (playerController != null)
             {
                 playerController.PlayerMoved += OnPlayerMoved;
@@ -42,6 +47,8 @@ namespace Dungeon
         /// </summary>
         private void SwitchTurn()
         {
+            // 敵の行動を実行する
+            enemyController.ExecuteAction();
             // Todo: ここにターンを切り替える処理を実装する
             Debug.Log("プレイヤーのターンが終了しました。敵のターンを開始します。");
         }
