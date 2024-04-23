@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace Player
@@ -6,11 +7,18 @@ namespace Player
     public class PlayerController : MonoBehaviour
     {
         #region PrivateField
+        /// <summary>プレイヤーの移動完了を知らせるイベント</summary>
+        public event Action PlayerMoved;
+        #endregion
+
+        #region PrivateField
         /// <summary>移動にかかる時間の逆数</summary>
         private float inverseMoveTime;
         private Rigidbody2D rb;
-        /// <summary>移動にかかる時間の逆数</summary>
-        private bool isMoving = false; // プレイヤーが移動中かどうかを示すフラグ
+        /// <summary>プレイヤーが移動中かどうか</summary>
+        private bool isMoving = false;
+        /// <summary>Shiftキーが押されているかどうか</summary>
+        private bool isShiftPressed = false;
         #endregion
 
         #region SerializeField
@@ -44,7 +52,7 @@ namespace Player
         private void PlayerMove()
         {
             // Shiftキーが押されているかどうかを確認
-            bool isShiftPressed = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            isShiftPressed = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
             if (isShiftPressed)
             {
@@ -127,7 +135,17 @@ namespace Player
             }
         }
 
-        // プレイヤーを滑らかに移動させるコルーチン
+        /// <summary>
+        /// 移動完了時に呼び出される処理
+        /// </summary>
+        private void OnMoveComplete()
+        {
+            PlayerMoved?.Invoke();
+        }
+
+        /// <summary>
+        /// プレイヤーを滑らかに移動させるコルーチン
+        /// </summary>
         private IEnumerator SmoothMovement(Vector3 end)
         {
             float sqrRemainingDistance = (transform.position - end).sqrMagnitude;
@@ -140,6 +158,7 @@ namespace Player
                 yield return null;
             }
 
+            OnMoveComplete();
             // 移動が完了したらフラグをリセット
             isMoving = false;
         }
