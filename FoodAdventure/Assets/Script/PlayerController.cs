@@ -9,6 +9,7 @@ namespace Player
         /// <summary>移動にかかる時間の逆数</summary>
         private float inverseMoveTime;
         private Rigidbody2D rb;
+        /// <summary>移動にかかる時間の逆数</summary>
         private bool isMoving = false; // プレイヤーが移動中かどうかを示すフラグ
         #endregion
 
@@ -28,52 +29,80 @@ namespace Player
 
         void Update()
         {
-            // Shiftキーが押されているかどうかをチェック
-            bool isShiftPressed = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-
-            if (!isMoving) // プレイヤーが移動中でない場合
+            // プレイヤーが移動中でない場合のみ入力を受け付ける
+            if (!isMoving)
             {
-                if (isShiftPressed) // Shiftキーが押されている場合
-                {
-                    // 斜め移動を試みる
-                    if (Input.GetKeyDown(KeyCode.UpArrow) && Input.GetKey(KeyCode.RightArrow))
-                    {
-                        AttemptMove(1, 1);
-                    }
-                    else if (Input.GetKeyDown(KeyCode.UpArrow) && Input.GetKey(KeyCode.LeftArrow))
-                    {
-                        AttemptMove(-1, 1);
-                    }
-                    else if (Input.GetKeyDown(KeyCode.DownArrow) && Input.GetKey(KeyCode.RightArrow))
-                    {
-                        AttemptMove(1, -1);
-                    }
-                    else if (Input.GetKeyDown(KeyCode.DownArrow) && Input.GetKey(KeyCode.LeftArrow))
-                    {
-                        AttemptMove(-1, -1);
-                    }
-                }
-                else if (Input.GetKeyDown(KeyCode.UpArrow))
-                {
-                    AttemptMove(0, 1);
-                }
-                else if (Input.GetKeyDown(KeyCode.DownArrow))
-                {
-                    AttemptMove(0, -1);
-                }
-                else if (Input.GetKeyDown(KeyCode.LeftArrow))
-                {
-                    AttemptMove(-1, 0);
-                }
-                else if (Input.GetKeyDown(KeyCode.RightArrow))
-                {
-                    AttemptMove(1, 0);
-                }
+                PlayerMove();   
             }
         }
         #endregion
 
         #region PrivateMethod
+        /// <summary>
+        /// プレイヤーの移動処理
+        /// </summary>
+        private void PlayerMove()
+        {
+            // Shiftキーが押されているかどうかを確認
+            bool isShiftPressed = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+
+            if (isShiftPressed)
+            {
+                DiagonalMove();
+            }
+            else
+            {
+                UpDownLeftRightMove();
+            }
+        }
+
+        /// <summary>
+        /// 斜め移動を行う処理
+        /// </summary>
+        private void DiagonalMove()
+        {
+            if (Input.GetKeyDown(KeyCode.UpArrow) && Input.GetKey(KeyCode.RightArrow))
+            {
+                AttemptMove(1, 1);
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow) && Input.GetKey(KeyCode.LeftArrow))
+            {
+                AttemptMove(-1, 1);
+            }
+            if (Input.GetKeyDown(KeyCode.DownArrow) && Input.GetKey(KeyCode.RightArrow))
+            {
+                AttemptMove(1, -1);
+            }
+            if (Input.GetKeyDown(KeyCode.DownArrow) && Input.GetKey(KeyCode.LeftArrow))
+            {
+                AttemptMove(-1, -1);
+            }
+        }
+
+        /// <summary>
+        /// 上下左右移動を行う処理
+        /// </summary>
+        private void UpDownLeftRightMove()
+        {
+            // 上下左右の移動を試みる
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                AttemptMove(0, 1);
+            }
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                AttemptMove(0, -1);
+            }
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                AttemptMove(-1, 0);
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                AttemptMove(1, 0);
+            }
+        }
+
         /// <summary>
         /// 移動を行う処理
         /// </summary>
