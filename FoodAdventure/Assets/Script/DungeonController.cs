@@ -1,5 +1,5 @@
-﻿using Player;
-using Enemy;
+﻿using Character.Player;
+using Character.Enemy;
 using UnityEngine;
 
 namespace Dungeon
@@ -7,9 +7,6 @@ namespace Dungeon
     public class DungeonController : MonoBehaviour
     {
         #region PrivateField
-        /// <summary>プレイヤーが行動したかどうか</summary>
-        private bool isPlayerTurn;
-
         private EnemyController enemyController;
         #endregion
 

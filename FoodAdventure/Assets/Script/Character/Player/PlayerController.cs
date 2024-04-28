@@ -2,9 +2,9 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Player
+namespace Character.Player
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : CharacterController
     {
         #region PublicField
         /// <summary>プレイヤーの移動完了を知らせるイベント</summary>
@@ -14,11 +14,13 @@ namespace Player
         #region PrivateField
         /// <summary>移動にかかる時間の逆数</summary>
         private float inverseMoveTime;
-        private Rigidbody2D rb;
         /// <summary>プレイヤーが移動中かどうか</summary>
         private bool isMoving = false;
         /// <summary>Shiftキーが押されているかどうか</summary>
         private bool isShiftPressed = false;
+        private Rigidbody2D rb;
+        /// <summary>向いている方向</summary>
+        private CharacterDirection characterDirection;
         #endregion
 
         #region SerializeField
@@ -33,6 +35,9 @@ namespace Player
         {
             rb = GetComponent<Rigidbody2D>();
             inverseMoveTime = 1f / moveTime;
+
+            // 初期配置の方向は下方向にする
+            characterDirection = CharacterDirection.Down;
         }
 
         void Update()
@@ -71,18 +76,22 @@ namespace Player
         {
             if (Input.GetKeyDown(KeyCode.UpArrow) && Input.GetKey(KeyCode.RightArrow))
             {
+                characterDirection = CharacterDirection.UpRight;
                 AttemptMove(1, 1);
             }
             if (Input.GetKeyDown(KeyCode.UpArrow) && Input.GetKey(KeyCode.LeftArrow))
             {
+                characterDirection = CharacterDirection.UpLeft;
                 AttemptMove(-1, 1);
             }
             if (Input.GetKeyDown(KeyCode.DownArrow) && Input.GetKey(KeyCode.RightArrow))
             {
+                characterDirection = CharacterDirection.DownRight;
                 AttemptMove(1, -1);
             }
             if (Input.GetKeyDown(KeyCode.DownArrow) && Input.GetKey(KeyCode.LeftArrow))
             {
+                characterDirection = CharacterDirection.DownLeft;
                 AttemptMove(-1, -1);
             }
         }
@@ -95,20 +104,24 @@ namespace Player
             // 上下左右の移動を試みる
             if (Input.GetKeyDown(KeyCode.UpArrow))
             {
+                characterDirection = CharacterDirection.Up;
                 AttemptMove(0, 1);
             }
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
+                characterDirection = CharacterDirection.Down;
                 AttemptMove(0, -1);
-            }
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                AttemptMove(-1, 0);
             }
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
+                characterDirection = CharacterDirection.Right;
                 AttemptMove(1, 0);
             }
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                characterDirection = CharacterDirection.Left;
+                AttemptMove(-1, 0);
+            }   
         }
 
         /// <summary>
