@@ -13,6 +13,8 @@ namespace Dungeon
         #region SerializeField
         /// <summary>プレイヤーの処理</summary>
         [SerializeField] PlayerController playerController;
+        /// <summary>ダンジョンの生成処理</summary>
+        [SerializeField] DungeonGenerator dungeonGenerator;
         #endregion
 
         #region PublicMethod
@@ -27,6 +29,8 @@ namespace Dungeon
             {
                 playerController.PlayerMoved += OnPlayerMoved;
             }
+
+            dungeonGenerator.GenerateDungeon();
         }
         #endregion
 
