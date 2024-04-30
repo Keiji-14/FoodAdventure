@@ -108,17 +108,22 @@ namespace Dungeon
 
             Vector2Int direction = endPoint - startPoint;
             int stepCount = Mathf.Max(Mathf.Abs(direction.x), Mathf.Abs(direction.y));
+
             direction /= stepCount;
 
             Vector2Int currentPosition = startPoint;
-            for (int i = 0; i <= stepCount; i++)
+            for (int i = 0; i < stepCount; i++)
             {
                 path.Add(currentPosition);
-                if (corridors.Contains(currentPosition))
-                {
-                    return null; // 既に通路がある場合は接続しない
-                }
                 currentPosition += direction;
+            }
+
+            Debug.Log("endpoint" + endPoint);
+
+            while (currentPosition != endPoint)
+            {
+                path.Add(currentPosition);
+                currentPosition += new Vector2Int(Mathf.Clamp(endPoint.x - currentPosition.x, -1, 1), Mathf.Clamp(endPoint.y - currentPosition.y, -1, 1));
             }
 
             return path;
