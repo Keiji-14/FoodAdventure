@@ -4,8 +4,16 @@ using UnityEngine;
 
 namespace Character.Player
 {
-    public class PlayerController : CharacterController
+    /// <summary>プレイヤーの操作状態</summary>
+    public enum OperationStatus
     {
+        DefaultMove,
+        DiagonalMove,
+        ChangingDirection,
+    }
+
+    public class PlayerController : CharacterController
+    {    
         #region PublicField
         /// <summary>プレイヤーの移動完了を知らせるイベント</summary>
         public event Action PlayerMoved;
@@ -19,6 +27,8 @@ namespace Character.Player
         /// <summary>Shiftキーが押されているかどうか</summary>
         private bool isShiftPressed = false;
         private Rigidbody2D rb;
+        /// <summary>操作状態</summary>
+        private OperationStatus operationStatus;
         /// <summary>向いている方向</summary>
         private CharacterDirection characterDirection;
         #endregion
@@ -56,16 +66,30 @@ namespace Character.Player
         /// </summary>
         private void PlayerMove()
         {
-            // Shiftキーが押されているかどうかを確認
-            isShiftPressed = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-
-            if (isShiftPressed)
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
-                DiagonalMove();
+                operationStatus = OperationStatus.DiagonalMove;
+            }
+            else if (Input.GetKey(KeyCode.C))
+            {
+                operationStatus = OperationStatus.ChangingDirection;
             }
             else
             {
-                UpDownLeftRightMove();
+                operationStatus = OperationStatus.DefaultMove;
+            }
+
+            switch (operationStatus)
+            {
+                case OperationStatus.DefaultMove:
+                    UpDownLeftRightMove();
+                    break;
+                case OperationStatus.DiagonalMove:
+                    DiagonalMove();
+                    break;
+                case OperationStatus.ChangingDirection:
+                    ChangingDirection();
+                    break;
             }
         }
 
@@ -122,6 +146,46 @@ namespace Character.Player
                 characterDirection = CharacterDirection.Left;
                 AttemptMove(-1, 0);
             }   
+        }
+
+
+        /// <summary>
+        /// 方向転換を行う処理
+        /// </summary>
+        private void ChangingDirection()
+        {
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                characterDirection = CharacterDirection.Up;
+            }
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                characterDirection = CharacterDirection.Down;
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                characterDirection = CharacterDirection.Right;
+            }
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                characterDirection = CharacterDirection.Left;
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow) && Input.GetKey(KeyCode.RightArrow))
+            {
+                characterDirection = CharacterDirection.UpRight;
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow) && Input.GetKey(KeyCode.LeftArrow))
+            {
+                characterDirection = CharacterDirection.UpLeft;
+            }
+            if (Input.GetKeyDown(KeyCode.DownArrow) && Input.GetKey(KeyCode.RightArrow))
+            {
+                characterDirection = CharacterDirection.DownRight;
+            }
+            if (Input.GetKeyDown(KeyCode.DownArrow) && Input.GetKey(KeyCode.LeftArrow))
+            {
+                characterDirection = CharacterDirection.DownLeft;
+            }
         }
 
         /// <summary>
