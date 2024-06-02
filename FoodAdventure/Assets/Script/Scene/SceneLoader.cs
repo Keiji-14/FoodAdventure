@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,23 +11,33 @@ namespace Scene
     /// </summary>
     public class SceneLoader : MonoBehaviour
     {
+        #region PublicField
+        /// <summary>シーンがロードされた時に発生するイベント</summary>
+        public event Action<string> OnSceneLoaded;
+        #endregion
+
         #region PrivateField
         private static SceneLoader instance = null;
-
+        /// <summary>シーン名</summary>
         private Dictionary<SceneName, string> SceneNames = new Dictionary<SceneName, string>()
         {
-            {SceneName.Title,         "Title"},
-            {SceneName.Reversi,       "Reversi"},
+            {SceneName.Title,   "Title"},
+            {SceneName.Game,    "Game"},
+            {SceneName.GameClear, "GameClear"},
+            {SceneName.GameOver, "GameOver"},
+            {SceneName.Help, "Help"},
         };
         #endregion
 
         #region PublicMethod
-
+        /// <summary>シーンの種類</summary>
         public enum SceneName
         {
             Title,
-            Reversi,
-            GameOver
+            Game,
+            GameClear,
+            GameOver,
+            Help,
         }
 
         /// <summary>
@@ -55,6 +66,15 @@ namespace Scene
         {
             StartCoroutine(LoadAsync(SceneNames[sceneName], isAdditive));
         }
+
+        /// <summary>
+        /// シーンアンロード
+        /// </summary>
+        /// <param name="sceneName">シーン名</param>
+        public void UnLoad(SceneName sceneName)
+        {
+            StartCoroutine(UnLoadAsync(SceneNames[sceneName]));
+        }
         #endregion
 
 
@@ -78,6 +98,25 @@ namespace Scene
 
             // シーンが追加された後に、アクティブ状態を変更する
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
+
+            // シーンロード完了を通知する
+            OnSceneLoaded?.Invoke(sceneName);
+        }
+
+        /// <summary>
+        /// 非同期シーンアンロード
+        /// </summary>
+        /// <param name="sceneName">シーン名</param>
+        private IEnumerator UnLoadAsync(string sceneName)
+        {
+            // シーンを非同期でアンロードする
+            var asyncUnload = SceneManager.UnloadSceneAsync(sceneName);
+
+            // ロードが完了するまで待機する
+            while (!asyncUnload.isDone)
+            {
+                yield return null;
+            }
         }
         #endregion
     }
